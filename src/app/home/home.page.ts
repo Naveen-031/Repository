@@ -1,29 +1,24 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { HomeService } from '../services/home.service';
-import { HttpClient } from '@angular/common/http';
-import { LoadingController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { MovieServiceService } from '../services/movie-service.service';
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-UserDetials: any = [];
-  constructor(private homeService: HomeService, private http: HttpClient, public loadingController: LoadingController) {this.getUsersList(); }
-
-  usersList: any[] = [];
-  async getUsersList() {
-    const loading = await this.loadingController.create({
-      message: 'Hellooo',
-      duration: 2000
-    });
-    await loading.present();
-
-    this.http.get('https://randomuser.me/api/?results=10').subscribe(data => {
-      this.usersList = data["results"];
-      loading.dismiss();
-    });
-  }
+  movies: any[];
+  constructor(private movieService: MovieServiceService, private router: Router) {}
+  searchForMovie(event, key) {
+    if (event.target.value.length > 2) {
+        this.movieService.searchMovies(event.target.value).subscribe((res) => {
+            this.movies = res;
+        });
+    }
 }
-
+selectMovie(event, movie) {
+    console.log(movie);
+    this.router.navigateByUrl('/info/' + movie.id);
+}
+}
